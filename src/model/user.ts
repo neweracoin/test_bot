@@ -20,7 +20,6 @@ const UserModel = new Schema<IUser>(
         },
         gender: {
             type: String,
-            required: true,
         },
         points: {
             type: Number,
@@ -100,6 +99,10 @@ UserModel.methods.claimTask = async function (taskId: number, points: number) {
     this.tasksClaimed.push({ taskId });
     this.points += points;
     await this.save();
+};
+
+UserModel.methods.setGender = async function (gender: string) {
+    this.gender = gender;
 };
 
 export default model<IUser>("Users", UserModel);

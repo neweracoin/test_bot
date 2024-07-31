@@ -23,4 +23,5 @@ export interface IUser extends Document {
     addReferee: (referralId: number, fullname: string) => Promise<void>;
     getTasks: () => Promise<{ taskId: number; name: string }[]>;
     claimTask: (taskId: number, points: number) => Promise<void>;
+    setGender: (gender: string) => Promise<void>;
 }

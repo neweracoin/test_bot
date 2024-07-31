@@ -13,7 +13,7 @@ router.get("/exist", async (req, res) => {
         return ErrorHandler({
             res,
             status: 400,
-            message: "Please provide a telegram id",
+            message: "Please provide a telegram id"
         });
     }
     const user = await User.findOne({ telegramId: tid });
@@ -21,7 +21,7 @@ router.get("/exist", async (req, res) => {
         return ErrorHandler({
             res,
             status: 404,
-            message: "User not found",
+            message: "User not found"
         });
     }
 
@@ -29,23 +29,23 @@ router.get("/exist", async (req, res) => {
     const { referrals, ...userData } = user.toObject();
     const data = {
         ...userData,
-        referees,
+        referees
     };
     SuccessHandler({
         res,
         status: 200,
         message: "User found",
-        data: data,
+        data: data
     });
 });
 
 router.post("/save", async (req, res) => {
     const { telegramId, username, gender, fullname } = req.body;
-    if (!telegramId || !username || !gender) {
+    if (!telegramId || !username || !fullname) {
         return ErrorHandler({
             res,
             status: 400,
-            message: "Please provide all required fields",
+            message: "Please provide all required fields"
         });
     }
 
@@ -57,14 +57,35 @@ router.post("/save", async (req, res) => {
         username,
         gender,
         firstName,
-        lastName,
+        lastName
     });
 
     SuccessHandler({
         res,
         status: 201,
         message: "Account Created",
-        data: user,
+        data: user
+    });
+});
+
+router.put("/gender", async (req, res) => {
+    const { telegramId, gender } = req.body;
+
+    const user = (await User.findOne({ telegramId })) as IUser;
+    if (!user) {
+        return ErrorHandler({
+            res,
+            status: 404,
+            message: "your account is invalid"
+        });
+    }
+
+    await user.setGender(gender);
+
+    SuccessHandler({
+        res,
+        status: 200,
+        message: "Gender updated"
     });
 });
 
@@ -74,14 +95,14 @@ router.get("/leaderboard", async (req, res) => {
         return ErrorHandler({
             res,
             status: 404,
-            message: "No users found",
+            message: "No users found"
         });
     }
     SuccessHandler({
         res,
         status: 200,
         message: "Users found",
-        data: users,
+        data: users
     });
 });
 
@@ -92,7 +113,7 @@ router.put("/level-up", async (req, res) => {
         return ErrorHandler({
             res,
             status: 404,
-            message: "your account is invalid",
+            message: "your account is invalid"
         });
     } else {
         let requiredPoints = points;
@@ -102,7 +123,7 @@ router.put("/level-up", async (req, res) => {
             return ErrorHandler({
                 res,
                 status: 400,
-                message: "Not enough points to level up",
+                message: "Not enough points to level up"
             });
         }
         userPoints -= requiredPoints;
@@ -110,7 +131,7 @@ router.put("/level-up", async (req, res) => {
         SuccessHandler({
             res,
             status: 200,
-            message: "You have leveled up",
+            message: "You have leveled up"
         });
     }
 });
@@ -122,7 +143,7 @@ router.get("/referee", async (req, res) => {
         return ErrorHandler({
             res,
             status: 404,
-            message: "your account is invalid",
+            message: "your account is invalid"
         });
     }
 
@@ -131,7 +152,7 @@ router.get("/referee", async (req, res) => {
         res,
         status: 200,
         message: "Referees found",
-        data: referrals,
+        data: referrals
     });
 });
 
@@ -142,14 +163,14 @@ router.put("/add-referee", async (req, res) => {
         return ErrorHandler({
             res,
             status: 404,
-            message: "your account is invalid",
+            message: "your account is invalid"
         });
     }
     await user.addReferee(telegramId, fullname);
     SuccessHandler({
         res,
         status: 200,
-        message: "Referee added",
+        message: "Referee added"
     });
 });
 
@@ -160,14 +181,14 @@ router.put("/add-points", async (req, res) => {
         return ErrorHandler({
             res,
             status: 404,
-            message: "your account is invalid",
+            message: "your account is invalid"
         });
     }
     await user.addPoints(points);
     SuccessHandler({
         res,
         status: 200,
-        message: "Points added",
+        message: "Points added"
     });
 });
 
@@ -178,7 +199,7 @@ router.put("/deduct-points", async (req, res) => {
         return ErrorHandler({
             res,
             status: 404,
-            message: "your account is invalid",
+            message: "your account is invalid"
         });
     }
 
@@ -186,7 +207,7 @@ router.put("/deduct-points", async (req, res) => {
     SuccessHandler({
         res,
         status: 200,
-        message: "Points deducted",
+        message: "Points deducted"
     });
 });
 
@@ -197,7 +218,7 @@ router.get("/tasks", async (req, res) => {
         return ErrorHandler({
             res,
             status: 404,
-            message: "your account is invalid",
+            message: "your account is invalid"
         });
     }
     const tasks = await user.getTasks();
@@ -205,7 +226,7 @@ router.get("/tasks", async (req, res) => {
         res,
         status: 200,
         message: "Tasks found",
-        data: tasks,
+        data: tasks
     });
 });
 
@@ -216,14 +237,14 @@ router.put("/claim-task", async (req, res) => {
         return ErrorHandler({
             res,
             status: 404,
-            message: "your account is invalid",
+            message: "your account is invalid"
         });
     }
     await user.claimTask(taskId, points);
     SuccessHandler({
         res,
         status: 200,
-        message: "Points claimed",
+        message: "Points claimed"
     });
 });
 
