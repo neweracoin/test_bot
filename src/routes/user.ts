@@ -120,6 +120,30 @@ router.post("/footprint", async (req, res) => {
     });
 });
 
+router.get("/footprint", async (req, res) => {
+    const { telegramId } = req.query;
+    const user = (await User.findOne({ telegramId, createdAt: { $gte: new Date().setHours(0, 0, 0, 0) } })) as IUser;
+    if (!user) {
+        SuccessHandler({
+            res,
+            status: 200,
+            message: "Footprint not logged for today",
+            data: {
+                logged: false
+            }
+        });
+    } else {
+        SuccessHandler({
+            res,
+            status: 200,
+            message: "Footprint already logged",
+            data: {
+                logged: true
+            }
+        });
+    }
+});
+
 router.get("/leaderboard", async (req, res) => {
     const users = await User.find().sort({ points: -1, createdAt: 1 });
     if (!users) {
