@@ -4,6 +4,7 @@ import Level from "../model/level";
 import { ErrorHandler, SuccessHandler } from "../utils/helpers";
 import { IUser } from "../type/user";
 import { ILevel } from "../type/level";
+import FootPrint from "../model/footPrint";
 
 const router = Router();
 
@@ -86,6 +87,36 @@ router.put("/gender", async (req, res) => {
         res,
         status: 200,
         message: "Gender updated"
+    });
+});
+
+router.post("/footprint", async (req, res) => {
+    const { telegramId, point }: { telegramId: number; point: number } = req.body;
+    const user = (await User.findOne({ telegramId })) as IUser;
+    if (!user) {
+        return ErrorHandler({
+            res,
+            status: 404,
+            message: "your account is invalid"
+        });
+    }
+
+    let isLoggedForToday = await FootPrint.findOne({ telegramId, createdAt: { $gte: new Date().setHours(0, 0, 0, 0) } });
+
+    if (!isLoggedForToday) {
+        await FootPrint.create({ telegramId, point });
+        await user.addPoints(point);
+        SuccessHandler({
+            res,
+            status: 200,
+            message: "Footprint logged"
+        });
+    }
+
+    SuccessHandler({
+        res,
+        status: 200,
+        message: "Footprint already logged"
     });
 });
 
