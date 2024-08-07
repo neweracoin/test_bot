@@ -5,7 +5,7 @@ export interface IUser extends Document {
     username: string;
     firstName: string;
     lastName: string;
-    gender: string;
+    gender?: string;
     points: number;
     level: number;
     referralCode: string;

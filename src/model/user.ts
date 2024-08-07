@@ -6,56 +6,56 @@ const UserModel = new Schema<IUser>(
         telegramId: {
             type: Number,
             required: true,
-            unique: true,
+            unique: true
         },
         username: {
             type: String,
-            required: true,
+            required: true
         },
         firstName: {
-            type: String,
+            type: String
         },
         lastName: {
-            type: String,
+            type: String
         },
         gender: {
-            type: String,
+            type: String
         },
         points: {
             type: Number,
-            default: 0,
+            default: 0
         },
         level: {
             type: Number,
-            default: 0,
+            default: 0
         },
         referralCode: {
             type: String,
-            unique: true,
+            unique: true
         },
         referrals: [
             {
                 telegramId: {
                     type: Number,
-                    required: true,
+                    required: true
                 },
                 fullname: {
                     type: String,
-                    required: true,
-                },
-            },
+                    required: true
+                }
+            }
         ],
         tasksClaimed: [
             {
                 taskId: {
                     type: Number,
-                    required: true,
-                },
-            },
-        ],
+                    required: true
+                }
+            }
+        ]
     },
     {
-        timestamps: true,
+        timestamps: true
     }
 );
 
@@ -103,6 +103,7 @@ UserModel.methods.claimTask = async function (taskId: number, points: number) {
 
 UserModel.methods.setGender = async function (gender: string) {
     this.gender = gender;
+    await this.save();
 };
 
 export default model<IUser>("Users", UserModel);
