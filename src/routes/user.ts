@@ -52,7 +52,7 @@ router.post("/save", async (req, res) => {
 
     const name = fullname.split(" ");
     const firstName = name[0].toLowerCase();
-    const lastName = name[1].toLowerCase();
+    const lastName = name[1]?.toLowerCase() || "";
     const user = await User.create({
         telegramId,
         username,
