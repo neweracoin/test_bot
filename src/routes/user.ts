@@ -214,6 +214,7 @@ router.get("/referee", async (req, res) => {
 router.put("/add-referee", async (req, res) => {
     const { telegramId, referralCode, fullname } = req.body;
     const user = (await User.findOne({ referralCode })) as IUser;
+    const userReferred = (await User.findOne({ telegramId })) as IUser;
     if (!user) {
         return ErrorHandler({
             res,
@@ -222,6 +223,52 @@ router.put("/add-referee", async (req, res) => {
         });
     }
     await user.addReferee(telegramId, fullname);
+    await userReferred.addReferredBy(referralCode);
+    SuccessHandler({
+        res,
+        status: 200,
+        message: "Referee added"
+    });
+});
+router.put("/get-referee-point", async (req, res) => {
+    const {  referralCode } = req.body;
+    const user = (await User.findOne({ referralCode })) as IUser;
+   
+    if (!user) {
+        return ErrorHandler({
+            res,
+            status: 404,
+            message: "your account is invalid"
+        });
+    }
+
+    const result = await User.aggregate([
+        {
+            $match: {
+                referredBy: referralCode // Find all users referred by this referral code
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                totalEarnings: { $sum: "$points" } // Sum the earnings of referred users
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                bonus: { $multiply: ["$totalEarnings", 0.1] } // Calculate 10% of the total earnings
+            }
+        }
+    ]);
+    // let bonus:Number = result 
+
+    if (result.length > 0) {
+        const bonus = result[0].bonus;
+    await user.setBonusPoints(bonus);
+
+    }
+   
     SuccessHandler({
         res,
         status: 200,
