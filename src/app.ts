@@ -9,7 +9,7 @@ function sendWelcomePhoto(bot: TelegramBot, chatId: number, username: string, ur
             inline_keyboard: [
                 [
                     {
-                        text: "Play FitCoin",
+                        text: "Open portal",
                         web_app: {
                             url,
                         },

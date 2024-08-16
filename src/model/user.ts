@@ -70,11 +70,14 @@ UserModel.methods.getRefereePoints = async function () {
 
 UserModel.methods.addReferee = async function (telegramId: number, fullname: string) {
     this.referrals.push({ telegramId, fullname });
+    this.points += 750;
     await this.save();
 };
 
 UserModel.pre<IUser>("save", function (next) {
+    if (!this.referralCode){
     this.referralCode = Math.random().toString(36).substring(2, 7);
+    }
     next();
 });
 

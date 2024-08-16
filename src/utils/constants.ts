@@ -21,5 +21,5 @@ export class ErrorType extends Error {
     }
 }
 
-export const WelcomeText = (username: string) => `Hey,  @${username} \nWelcome to FitCoin\n\nFitcoin is changing the future of web3 by blending gamification, social interaction, and human fitness.\n
-Increase your rewards by walking, referring friends, and completing simple tasks.\n\nInvite friends and family.\nStay healthy, active, and fit to watch your rewards grow!\nMore Friends, More Fit.`;
+export const WelcomeText = (username: string) => `Hey,  @${username} \nWelcome to AiDog\n\nAiDog portal is open for Dog lovers to have fun and earn.\n
+Invite family and friends to earn more .\n\n\n`;
