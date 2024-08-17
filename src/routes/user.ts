@@ -145,8 +145,23 @@ router.get("/footprint", async (req, res) => {
 });
 
 router.get("/leaderboard", async (req, res) => {
-    const users = await User.find().sort({ points: -1, createdAt: 1 });
-    if (!users) {
+    
+    const users = await User.aggregate([
+        // Step 1: Add a new field that is the sum of field1 and field2
+        {
+          $addFields: {
+            totalSum: { $add: ["$points", "$bonus"] }
+          }
+        },
+        // Step 2: Sort by the new field totalSum in descending order (or ascending if needed)
+        {
+          $sort: { totalSum: -1 } // Use 1 for ascending order
+        },
+        // Optionally, remove the totalSum field if it's not needed in the output
+      
+      ])
+
+      if (!users) {
         return ErrorHandler({
             res,
             status: 404,
@@ -160,6 +175,80 @@ router.get("/leaderboard", async (req, res) => {
         data: users
     });
 });
+router.get("/get-referral-leaderboard", async (req, res) => {
+    const { referralCode } = req.query;
+
+    if (!referralCode) {
+        return ErrorHandler({
+            res,
+            status: 400,
+            message: "Please provide a telegram id"
+        });
+    }
+    
+    const users = await User.aggregate([
+        // Step 1: Add a new field that is the sum of field1 and field2
+        {
+            $match: {
+                referredBy: referralCode // Find all users referred by this referral code
+            }
+        },
+        { 
+            $project: { 
+              totalPoints: 1, 
+              firstName: 1, 
+              _id: 0 // Optionally exclude the _id field
+            } 
+          },
+        // Step 2: Sort by the new field totalSum in descending order (or ascending if needed)
+        {
+          $sort: { totalPoints: -1 } // Use 1 for ascending order
+        },
+        // Optionally, remove the totalSum field if it's not needed in the output
+
+
+        {
+            $limit: 100
+          },
+          // Step 5: Count the total number of users (ignores the limit)
+          {
+            $facet: {
+              totalUsers: [{ $count: "count" }], // Count the total number of users
+              users: [{ $limit: 100 }] // Limit the user documents returned
+            }}
+      
+      ])
+
+      if (!users) {
+        return ErrorHandler({
+            res,
+            status: 404,
+            message: "No users found"
+        });
+    }
+    SuccessHandler({
+        res,
+        status: 200,
+        message: "Users found",
+        data: users
+    });
+});
+// router.get("/leaderboard", async (req, res) => {
+//     const users = await User.find().sort({ points: -1, createdAt: 1 });
+//     if (!users) {
+//         return ErrorHandler({
+//             res,
+//             status: 404,
+//             message: "No users found"
+//         });
+//     }
+//     SuccessHandler({
+//         res,
+//         status: 200,
+//         message: "Users found",
+//         data: users
+//     });
+// });
 
 router.put("/level-up", async (req, res) => {
     const { telegramId, levelIndex, points } = req.body;
@@ -231,9 +320,9 @@ router.put("/add-referee", async (req, res) => {
     });
 });
 router.put("/get-referee-point", async (req, res) => {
-    const {  referralCode } = req.body;
+    const { referralCode } = req.body;
     const user = (await User.findOne({ referralCode })) as IUser;
-   
+
     if (!user) {
         return ErrorHandler({
             res,
@@ -248,10 +337,11 @@ router.put("/get-referee-point", async (req, res) => {
                 referredBy: referralCode // Find all users referred by this referral code
             }
         },
+        
         {
             $group: {
                 _id: null,
-                totalEarnings: { $sum: "$points" } // Sum the earnings of referred users
+                totalEarnings: { $sum: "$totalPoints" } // Sum the earnings of referred users
             }
         },
         {
@@ -265,10 +355,10 @@ router.put("/get-referee-point", async (req, res) => {
 
     if (result.length > 0) {
         const bonus = result[0].bonus;
-    await user.setBonusPoints(bonus);
+        await user.setBonusPoints(bonus);
 
     }
-   
+
     SuccessHandler({
         res,
         status: 200,

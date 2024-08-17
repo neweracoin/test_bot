@@ -25,6 +25,10 @@ const UserModel = new Schema<IUser>(
             type: Number,
             default: 0
         },
+        totalPoints: {
+            type: Number,
+            default: 0
+        },
         bonus: {
             type: Number,
             default: 0
@@ -78,7 +82,7 @@ UserModel.methods.getRefereePoints = async function () {
 
 UserModel.methods.addReferee = async function (telegramId: number, fullname: string) {
     this.referrals.push({ telegramId, fullname });
-    this.points += 750;
+    // this.points += 750;
     await this.save();
 };
 UserModel.methods.addReferredBy = async function (referralCode: string) {
@@ -96,10 +100,12 @@ UserModel.pre<IUser>("save", function (next) {
 
 UserModel.methods.addPoints = async function (points: number) {
     this.points += points;
+    this.totalPoints += points;
     await this.save();
 };
 UserModel.methods.setBonusPoints = async function (bonus: number) {
     this.bonus = bonus;
+    this.totalPoints = this.points + bonus;
     await this.save();
 };
 
@@ -118,6 +124,8 @@ UserModel.methods.claimTask = async function (taskId: number, points: number) {
     }
     this.tasksClaimed.push({ taskId });
     this.points += points;
+    this.totalPoints += points;
+
     await this.save();
 };
 

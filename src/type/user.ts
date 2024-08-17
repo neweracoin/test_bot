@@ -8,6 +8,7 @@ export interface IUser extends Document {
     gender?: string;
     points: number;
     bonus: number;
+    totalPoints: number;
     level: number;
     referralCode: string;
     referredBy: string;
