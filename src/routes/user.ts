@@ -160,7 +160,7 @@ router.get("/leaderboard", async (req, res) => {
         // Optionally, remove the totalSum field if it's not needed in the output
         { 
             $project: { 
-              telegramId: 1, 
+              userId: 1, 
               totalPoints: 1, 
               firstName: 1, 
               lastName: 1, 

@@ -4,6 +4,7 @@ export interface IUser extends Document {
     telegramId: number;
     username: string;
     firstName: string;
+    userId: string,
     lastName: string;
     gender?: string;
     points: number;

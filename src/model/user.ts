@@ -8,6 +8,11 @@ const UserModel = new Schema<IUser>(
             required: true,
             unique: true
         },
+        userId: {
+            type: String,
+            unique: true,  // Ensures that each userId is unique
+            required: true // Ensures that a userId is always generated
+          },
         username: {
             type: String,
             required: true
@@ -97,6 +102,13 @@ UserModel.pre<IUser>("save", function (next) {
     }
     next();
 });
+
+UserModel.pre<IUser>('save', function (next) {
+    if (!this.userId) {
+      this.userId = 'user_' + Date.now() + Math.random().toString(36).substring(2, 9);
+    }
+    next();
+  });
 
 UserModel.methods.addPoints = async function (points: number) {
     this.points += points;
