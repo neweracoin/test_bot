@@ -77,7 +77,7 @@ UserModel.methods.getRefereePoints = async function () {
         return [];
     }
     const users = (await this.model("Users").find({ telegramId: { $in: referrals.map((ref: any) => ref.telegramId) } })).limit(100) as IUser[];
-    return users.map((user) => ({ telegramId: user.telegramId, fullname: user.firstName + " " + user.lastName, username: user.username, points: user.points * 0.1 }));
+    return users.map((user) => ({ fullname: user.firstName + " " + user.lastName, username: user.username, points: user.points * 0.1 }));
 };
 
 UserModel.methods.addReferee = async function (telegramId: number, fullname: string) {
