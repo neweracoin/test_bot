@@ -100,15 +100,13 @@ UserModel.pre<IUser>("save", function (next) {
     if (!this.referralCode){
     this.referralCode = Math.random().toString(36).substring(2, 7);
     }
+    if (!this.userId) {
+        this.userId = 'user_' + Date.now() + Math.random().toString(36).substring(2, 9);
+      }
     next();
 });
 
-UserModel.pre<IUser>('save', function (next) {
-    if (!this.userId) {
-      this.userId = 'user_' + Date.now() + Math.random().toString(36).substring(2, 9);
-    }
-    next();
-  });
+
 
 UserModel.methods.addPoints = async function (points: number) {
     this.points += points;
