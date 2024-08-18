@@ -11,7 +11,7 @@ const UserModel = new Schema<IUser>(
         userId: {
             type: String,
             unique: true,  // Ensures that each userId is unique
-            required: true // Ensures that a userId is always generated
+       
           },
         username: {
             type: String,
