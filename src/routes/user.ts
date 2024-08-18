@@ -158,6 +158,15 @@ router.get("/leaderboard", async (req, res) => {
           $sort: { totalSum: -1 } // Use 1 for ascending order
         },
         // Optionally, remove the totalSum field if it's not needed in the output
+        { 
+            $project: { 
+              totalPoints: 1, 
+              firstName: 1, 
+              lastName: 1, 
+              bonus:1,
+              _id: 0 // Optionally exclude the _id field
+            } 
+          },
       
       ])
 
