@@ -186,7 +186,7 @@ router.get("/get-referral-leaderboard", async (req, res) => {
         });
     }
     
-    const users = await User.aggregate([
+    const result = await User.aggregate([
         // Step 1: Add a new field that is the sum of field1 and field2
         {
             $match: {
@@ -219,7 +219,7 @@ router.get("/get-referral-leaderboard", async (req, res) => {
       
       ])
 
-      if (!users) {
+      if (!result) {
         return ErrorHandler({
             res,
             status: 404,
@@ -230,7 +230,7 @@ router.get("/get-referral-leaderboard", async (req, res) => {
         res,
         status: 200,
         message: "Users found",
-        data: users
+        data: result
     });
 });
 // router.get("/leaderboard", async (req, res) => {
