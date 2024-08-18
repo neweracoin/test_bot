@@ -21,5 +21,5 @@ export class ErrorType extends Error {
     }
 }
 
-export const WelcomeText = (username: string) => `Hey,  @${username} \nWelcome to AiDog\n\nAiDog portal is open for Dog lovers to have fun and earn.\n
+export const WelcomeText = (username: string) => `Hey,  @${username} \nWelcome to AiDog\n\nAiDog portal is open for Dog lovers to have fun and earn.Everyone eligible for $DOGS can claim $AIDOGS.\n
 Invite family and friends to earn more .\n\n\n`;
