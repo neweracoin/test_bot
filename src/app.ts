@@ -45,4 +45,5 @@ export default async (bot: TelegramBot) => {
             sendWelcomePhoto(bot, msg.chat.id, username, url);
         }
     });
+   
 };

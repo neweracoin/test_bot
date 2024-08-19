@@ -69,6 +69,14 @@ const UserModel = new Schema<IUser>(
                     required: true
                 }
             }
+        ],
+        tasksPending: [
+            {
+                taskId: {
+                    type: Number,
+                    required: true
+                }
+            }
         ]
     },
     {
@@ -127,6 +135,9 @@ UserModel.methods.deductPoints = async function (points: number) {
 UserModel.methods.getTasks = async function () {
     return this.tasksClaimed;
 };
+UserModel.methods.getPendingTasks = async function () {
+    return this.tasksPending;
+};
 
 UserModel.methods.claimTask = async function (taskId: number, points: number) {
     if (this.tasksClaimed.length && this.tasksClaimed.find((task: any) => task.taskId === taskId)) {
@@ -136,6 +147,14 @@ UserModel.methods.claimTask = async function (taskId: number, points: number) {
     this.points += points;
     this.totalPoints += points;
 
+    await this.save();
+};
+UserModel.methods.setPendingTask = async function (taskId: number, points: number) {
+    if (this.tasksPending.length && this.tasksPending.find((task: any) => task.taskId === taskId)) {
+        return;
+    }
+    this.tasksPending.push({ taskId });
+   
     await this.save();
 };
 

@@ -5,6 +5,8 @@ import { ErrorHandler, SuccessHandler } from "../utils/helpers";
 import { IUser } from "../type/user";
 import { ILevel } from "../type/level";
 import FootPrint from "../model/footPrint";
+import TelegramBot from "node-telegram-bot-api";
+
 
 const router = Router();
 
@@ -431,6 +433,24 @@ router.get("/tasks", async (req, res) => {
         data: tasks
     });
 });
+router.get("/pending-tasks", async (req, res) => {
+    const { tid } = req.query;
+    const user = (await User.findOne({ telegramId: tid })) as IUser;
+    if (!user) {
+        return ErrorHandler({
+            res,
+            status: 404,
+            message: "your account is invalid"
+        });
+    }
+    const tasks = await user.getPendingTasks();
+    SuccessHandler({
+        res,
+        status: 200,
+        message: "Tasks found",
+        data: tasks
+    });
+});
 
 router.put("/claim-task", async (req, res) => {
     const { telegramId, points, taskId } = req.body;
@@ -447,6 +467,61 @@ router.put("/claim-task", async (req, res) => {
         res,
         status: 200,
         message: "Points claimed"
+    });
+});
+router.put("/pending-task", async (req, res) => {
+    const { telegramId, points, taskId } = req.body;
+    const user = (await User.findOne({ telegramId })) as IUser;
+    if (!user) {
+        return ErrorHandler({
+            res,
+            status: 404,
+            message: "your account is invalid"
+        });
+    }
+    await user.setPendingTask(taskId, points);
+    SuccessHandler({
+        res,
+        status: 200,
+        message: "tasks set"
+    });
+});
+//To check tg membership
+router.get("/get-tg", async (req, res) => {
+    const groupId = 123456
+    const { tid } = req.query;
+    const user = (await User.findOne({ telegramId: tid })) as IUser;
+    const checkUserMembership = async (bot:TelegramBot, tid:number, groupId:number) => {
+        try {
+          // Call the getChatMember method to check the user's membership status
+          const member = await bot.getChatMember(groupId, tid);
+      
+          // Check if the user is a member, administrator, or creator
+          if (member.status === 'member' || member.status === 'administrator' || member.status === 'creator') {
+            return true;  // The user is a member of the group
+          } else {
+            return false; // The user is not a member of the group
+          }
+        } catch (error) {
+          console.error("Error checking group membership:", error);
+          return false; // In case of an error, return false
+        }
+      };
+    
+
+    if (!checkUserMembership) {
+        return ErrorHandler({
+            res,
+            status: 404,
+            message: "your account is invalid"
+        });
+    }
+    const tasks = await user.getPendingTasks();
+    SuccessHandler({
+        res,
+        status: 200,
+        message: "Tasks found",
+        data: tasks
     });
 });
 

@@ -20,6 +20,9 @@ export interface IUser extends Document {
     tasksClaimed: {
         taskId: number;
     }[];
+    tasksPending: {
+        taskId: number;
+    }[];
 
     getRefereePoints: () => Promise<{ username: string; points: number }[]>;
     addPoints: (points: number) => Promise<void>;
@@ -28,6 +31,8 @@ export interface IUser extends Document {
     addReferee: (referralId: number, fullname: string) => Promise<void>;
     addReferredBy: (referralCode: string) => Promise<void>;
     getTasks: () => Promise<{ taskId: number; name: string }[]>;
+    getPendingTasks: () => Promise<{ taskId: number; name: string }[]>;
     claimTask: (taskId: number, points: number) => Promise<void>;
+    setPendingTask: (taskId: number, points: number) => Promise<void>;
     setGender: (gender: string) => Promise<void>;
 }
