@@ -487,19 +487,25 @@ router.put("/pending-task", async (req, res) => {
     });
 });
 //To check tg membership
-router.get("/get-tg", async (req, res) => {
-    const groupId = 123456
+router.put("/join-tg", async (req, res) => {
     const { tid } = req.query;
     const user = (await User.findOne({ telegramId: tid })) as IUser;
+    if (user){
+    const groupId:number =1001489884383;
+
     const checkUserMembership = async (bot:TelegramBot, tid:number, groupId:number) => {
         try {
           // Call the getChatMember method to check the user's membership status
-          const member = await bot.getChatMember(groupId, tid);
+          const member = await bot.getChatMember(1001489884383, tid);
       
           // Check if the user is a member, administrator, or creator
           if (member.status === 'member' || member.status === 'administrator' || member.status === 'creator') {
+            await user.claimTask(5, 150);
             return true;  // The user is a member of the group
+            
           } else {
+    await user.setPendingTask(5, 0);
+
             return false; // The user is not a member of the group
           }
         } catch (error) {
@@ -516,13 +522,10 @@ router.get("/get-tg", async (req, res) => {
             message: "your account is invalid"
         });
     }
-    const tasks = await user.getPendingTasks();
-    SuccessHandler({
-        res,
-        status: 200,
-        message: "Tasks found",
-        data: tasks
-    });
+
+   
+  
+}
 });
 
 export default router;
