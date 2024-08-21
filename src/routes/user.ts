@@ -6,6 +6,7 @@ import { IUser } from "../type/user";
 import { ILevel } from "../type/level";
 import FootPrint from "../model/footPrint";
 import TelegramBot from "node-telegram-bot-api";
+import { ENV } from "../utils/constants";
 
 
 const router = Router();
@@ -489,43 +490,35 @@ router.put("/pending-task", async (req, res) => {
 //To check tg membership
 router.put("/join-tg", async (req, res) => {
     const { tid } = req.query;
+    console.log("tid", tid)
     const user = (await User.findOne({ telegramId: tid })) as IUser;
-    if (user){
-    const groupId:number =1001489884383;
+    const botToken = ENV.TOKEN;
+    const bot = new TelegramBot(botToken, { polling: true });
+  
+    if(user)
+    bot.getChatMember(-1002153977219, Number(tid)).then((chatMember) => {
+        const isMember = ['creator', 'administrator', 'member'].includes(chatMember.status);
+        user.claimTask(1, 150);
+        console.log("chatMember", chatMember, isMember)
+        res.json({
+            userId: chatMember.user.id,
+            isMember: isMember,
+            status: chatMember.status,
+            firstName: chatMember.user.first_name,
+            lastName: chatMember.user.last_name,
+            username: chatMember.user.username,
+        });
+    }).
+   
+    catch((error) => {
+        console.log("chatMember", "Error")
 
-    const checkUserMembership = async (bot:TelegramBot, tid:number, groupId:number) => {
-        try {
-          // Call the getChatMember method to check the user's membership status
-          const member = await bot.getChatMember(1002153977219, tid);
-      
-          // Check if the user is a member, administrator, or creator
-          if (member.status === 'member' || member.status === 'administrator' || member.status === 'creator') {
-            await user.claimTask(5, 150);
-            return true;  // The user is a member of the group
-            
-          } else {
-        await user.setPendingTask(5, 0);
+         user.setPendingTask(1, 0);
+        res.status(500).json({ error: 'Error fetching chat member info.' });
+    });
 
-            return false; // The user is not a member of the group
-          }
-        } catch (error) {
-          console.error("Error checking group membership:", error);
-          return false; // In case of an error, return false
-        }
-      };
     
 
-    if (!checkUserMembership) {
-        return ErrorHandler({
-            res,
-            status: 404,
-            message: "your account is invalid"
-        });
-    }
-
-   
-  
-}
 });
 
 export default router;

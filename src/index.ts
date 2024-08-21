@@ -30,7 +30,7 @@ const bot = new TelegramBot(ENV.TOKEN as string, { polling: true });
             })
             .then(() => {
                 app.listen(PORT, () => console.log(`Bot Up and Running on ${PORT}`));
-                botApp(bot);
+                // botApp(bot);
             });
     } catch (error) {
         console.error("Error occurred:", error);
