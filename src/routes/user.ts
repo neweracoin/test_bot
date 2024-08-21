@@ -504,7 +504,7 @@ router.put("/join-tg", async (req, res) => {
             return true;  // The user is a member of the group
             
           } else {
-    await user.setPendingTask(5, 0);
+        await user.setPendingTask(5, 0);
 
             return false; // The user is not a member of the group
           }
