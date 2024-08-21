@@ -496,7 +496,7 @@ router.put("/join-tg", async (req, res) => {
     const checkUserMembership = async (bot:TelegramBot, tid:number, groupId:number) => {
         try {
           // Call the getChatMember method to check the user's membership status
-          const member = await bot.getChatMember(-1002153977219, tid);
+          const member = await bot.getChatMember(1002153977219, tid);
       
           // Check if the user is a member, administrator, or creator
           if (member.status === 'member' || member.status === 'administrator' || member.status === 'creator') {
