@@ -49,7 +49,9 @@ const bot = new Telegraf(ENV.TOKEN as string);
     } catch (error) {
         console.error("Error occurred:", error);
     }
-
+// Enable graceful stop
+process.once('SIGINT', () => bot.stop('SIGINT'))
+process.once('SIGTERM', () => bot.stop('SIGTERM'))
     process.on("unhandledRejection", (err) => {
         console.log(err);
         process.exit(1);
