@@ -1,12 +1,11 @@
-
+import TelegramBot from "node-telegram-bot-api";
 import mongoose from "mongoose";
 import { ENV } from "./utils/constants";
-import botApp from "./app";
+import botApp from "./appold";
 import express from "express";
 import cors from "cors";
 import { Outline } from "./utils/helpers";
 import routes from "./routes";
-import { Telegraf } from "telegraf";
 
 const app = express();
 const PORT = ENV.PORT;
@@ -21,9 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 routes(app);
 
-
-
-const bot = new Telegraf(ENV.TOKEN);
+const bot = new TelegramBot(ENV.TOKEN as string, { polling: true });
 
 (async () => {
     try {

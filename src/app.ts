@@ -1,10 +1,11 @@
-import TelegramBot from "node-telegram-bot-api";
-import Users from "./model/user";
+import { Context, Telegraf } from 'telegraf';
 import { ENV, WelcomeText } from "./utils/constants";
 
-function sendWelcomePhoto(bot: TelegramBot, chatId: number, username: string, url: string) {
-    bot.sendPhoto(chatId, `${ENV.APP_URL}/${ENV.APP_IMG_NAME}`, {
-        caption: WelcomeText(username),
+
+// Function to send a welcome photo
+function sendWelcomePhoto(ctx: Context, username: string, url: string) {
+    ctx.replyWithPhoto(`${process.env.APP_URL}/${ENV.APP_IMG_NAME}`, {
+        caption: `Welcome, ${username}!`,
         reply_markup: {
             inline_keyboard: [
                 [
@@ -20,30 +21,34 @@ function sendWelcomePhoto(bot: TelegramBot, chatId: number, username: string, ur
     });
 }
 
-export default async (bot: TelegramBot) => {
-    bot.onText(/\/start (.+)/, async (msg, match) => {
-        let { id, username, first_name, last_name } = msg.chat as TelegramBot.Chat;
-        const fullname = `${first_name || ""} ${last_name || ""}`;
-        let referralCode = "null";
-        let url = process.env.APP_URL + "/splash-screen?tid=" + id + "&u=" + username + "&fn=" + fullname;
-        if (match && !!match[1]) {
+// Main bot setup
+export default async (bot: Telegraf<Context>) => {
+    // Handle /start command with a parameter
+    bot.command('start', async (ctx) => {
+        const { id, username, first_name, last_name } = ctx.message.from!;
+        const fullname = `${first_name || ''} ${last_name || ''}`;
+        let referralCode = 'null';
+        let url = `${process.env.APP_URL}/splash-screen?tid=${id}&u=${username}&fn=${fullname}`;
+
+        const match = ctx.message?.text?.match(/\/start (.+)/);
+        if (match && match[1]) {
             referralCode = match[1];
-            url += "&r=" + referralCode;
+            url += `&r=${referralCode}`;
         }
 
         if (username) {
-            sendWelcomePhoto(bot, msg.chat.id, username, url);
+            sendWelcomePhoto(ctx, username, url);
         }
     });
 
-    bot.onText(/^\/start$/, async (msg) => {
-        const { id, username, first_name, last_name } = msg.chat as TelegramBot.Chat;
-        const fullname = `${first_name || ""} ${last_name || ""}`;
-        let url = process.env.APP_URL + "/splash-screen?tid=" + id + "&u=" + username + "&fn=" + fullname;
+    // Handle /start command without a parameter
+    bot.start(async (ctx) => {
+        const { id, username, first_name, last_name } = ctx.message.from!;
+        const fullname = `${first_name || ''} ${last_name || ''}`;
+        let url = `${process.env.APP_URL}/splash-screen?tid=${id}&u=${username}&fn=${fullname}`;
 
         if (username) {
-            sendWelcomePhoto(bot, msg.chat.id, username, url);
+            sendWelcomePhoto(ctx, username, url);
         }
     });
-   
 };
