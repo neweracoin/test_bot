@@ -5,7 +5,7 @@ import { ENV, WelcomeText } from "./utils/constants";
 // Function to send a welcome photo
 function sendWelcomePhoto(ctx: Context, username: string, url: string) {
     ctx.replyWithPhoto(`${process.env.APP_URL}/${ENV.APP_IMG_NAME}`, {
-        caption: `Welcome, ${username}!`,
+        caption: WelcomeText(username),
         reply_markup: {
             inline_keyboard: [
                 [
