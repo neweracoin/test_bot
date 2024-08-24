@@ -30,6 +30,16 @@ const bot = new TelegramBot(ENV.TOKEN as string, { polling: true });
             })
             .then(() => {
                 app.listen(PORT, () => console.log(`Bot Up and Running on ${PORT}`));
+                const urlTo = `https://api.telegram.org/bot${ENV.TOKEN}/deleteWebhook`;
+                fetch(urlTo)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("updatebot", data)
+                })
+                .catch(error => {
+                    console.log('Failed to fetch updates');
+                    console.error('Error fetching updates:', error);
+                });
                 botApp(bot);
             });
     } catch (error) {
