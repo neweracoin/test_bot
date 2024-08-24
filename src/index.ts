@@ -23,7 +23,7 @@ routes(app);
 
 
 
-const bot = new Telegraf(ENV.TOKEN);
+const bot = new Telegraf(ENV.TOKEN as string);
 
 (async () => {
     try {
@@ -44,6 +44,7 @@ const bot = new Telegraf(ENV.TOKEN);
                 //     console.error('Error fetching updates:', error);
                 // });
                 botApp(bot);
+                bot.launch()
             });
     } catch (error) {
         console.error("Error occurred:", error);
